@@ -3,17 +3,22 @@ app = Flask(__name__)
 
 import subprocess
 import time
+import json
+
+def process(model, nevts):
+    "Process request and return PID"
+    proc = subprocess.Popen(['python', 'python_script.py', '--model', str(model), '--nevts', str(nevts)])
+    time.sleep(3) # <-- There's no time.wait, but time.sleep.
+    return proc.pid
 
 @app.route('/submit', methods=['POST'])
-def json():
+def submit():
     request_data = request.get_json()
     model=request_data["model"]
     nevts=request_data["nevts"]
-    proc = subprocess.Popen(['python', 'python_script.py', '--model', str(model), '--nevts', str(nevts)])
-    time.sleep(3) # <-- There's no time.wait, but time.sleep.
-    pid = proc.pid
-    job_ID=f"{{\n\"job_ID\": {pid}\n}}\n"
-    return job_ID
+    pid = process(model, nevts)
+    data = {"job_id": pid}
+    return json.dumps(data)
     
     
     str(pid)+"\n"
