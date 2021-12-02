@@ -19,9 +19,6 @@ def submit():
     pid = process(model, nevts)
     data = {"job_id": pid}
     return json.dumps(data)
-    
-    
-    str(pid)+"\n"
 
 if __name__ == '__main__':
     # run app in debug mode on port 5000
