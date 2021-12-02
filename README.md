@@ -12,3 +12,7 @@ curl -H "Content-Type: application/json" -d @input.json http://localhost:5000/su
 Currently the [python_script.py](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/python_script.py) script prints in the server shell the information 
 contained in the [input.json](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/input.json) file. The server run this python script getting the PID and 
 returns it in the form of json printed on the client shell.
+
+The "status" API takes a PID as argument and retrieve the status. It can be used as the following
+```
+curl http://localhost:5000/status?pid=5340
