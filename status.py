@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 
 class OptionParser(object):
     "Option parser class for reader arguments"
@@ -14,7 +15,13 @@ def main():
     optmgr = OptionParser()
     opts = optmgr.parser.parse_args()
     pid = opts.pid
-    feedback = {"job_id": pid, "status": "ongoing"}
+    print(pid)
+    stream = os.popen(f'ps -a {pid}')
+    output = stream.read()
+    output_string = "Running"
+    if output.count('\n') == 1:
+        output_string = "Ended"
+    feedback = {"job_id": pid, "status": output_string}
     print(json.dumps(feedback))
 
 if __name__ == '__main__':

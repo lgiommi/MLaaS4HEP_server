@@ -1,4 +1,5 @@
 import argparse
+import time
 
 class OptionParser(object):
     "Option parser class for reader arguments"
@@ -17,6 +18,7 @@ def main():
     model = opts.model
     nevts = opts.nevts
     print(f"model: {model}\nnevts: {nevts}\n")
+    time.sleep(30) # <-- There's no time.wait, but time.sleep.
 
 if __name__ == '__main__':
     main()
