@@ -2,6 +2,7 @@ from flask import Flask, request
 app = Flask(__name__)
 
 import subprocess
+import os
 import json
 
 def process(model, nevts):
@@ -10,9 +11,13 @@ def process(model, nevts):
     return proc.pid
 
 def return_status(pid):
-    proc = subprocess.Popen(['python','status.py','--pid',str(pid)], stdout=subprocess.PIPE)
-    out, err = proc.communicate()
-    return out
+    stream = os.popen(f'ps -a {pid}')
+    output = stream.read()
+    output_string = "Running"
+    if output.count('\n') == 1:
+        output_string = "Ended"
+    feedback = {"job_id": pid, "status": output_string}
+    return json.dumps(feedback)
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -21,7 +26,7 @@ def submit():
     nevts=request_data["nevts"]
     pid = process(model, nevts)
     data = {"job_id": pid}
-    return json.dumps(data)
+    return json.dumps(data, indent=True)
 
 @app.route('/status', methods=['GET'])
 def status():

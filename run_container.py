@@ -1,6 +1,5 @@
 import argparse
-import time
-import json
+import os
 
 class OptionParser(object):
     "Option parser class for reader arguments"
@@ -18,10 +17,9 @@ def main():
     opts = optmgr.parser.parse_args()
     model = opts.model
     nevts = opts.nevts
-    data = {"model": model, "nevts": nevts}
-    time.sleep(30) # <-- There's no time.wait, but time.sleep.
-    with open('data.json', 'w') as outfile:
-        json.dump(data, outfile, indent=True)
+    os.popen(f'docker run -v /Users/luca.giommi/Computer_Windows/Universita/Dottorato/TFaaS/MLaaS4HEP_server:/data/ -i -t mlaas_server --model={model} --nevts={nevts}')
+    output = stream.read()
+    return output
 
 if __name__ == '__main__':
     main()
