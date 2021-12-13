@@ -1,4 +1,5 @@
 {
+    "device": "gpu",
     "model": "model.py",
     "nevts": -1
   }

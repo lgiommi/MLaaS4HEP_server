@@ -4,10 +4,14 @@ app = Flask(__name__)
 import subprocess
 import os
 import json
+gpu_pid = -1
 
-def process(model, nevts):
+def process(device, model, nevts):
     "Process request and return PID"
-    proc = subprocess.Popen(['python', 'python_script.py', '--model', str(model), '--nevts', str(nevts)])
+    proc = subprocess.Popen(['python', 'python_script.py', '--device', str(device), '--model', str(model), '--nevts', str(nevts)])
+    if  device == "gpu":
+        global gpu_pid
+        gpu_pid = proc.pid
     return proc.pid
 
 def return_status(pid):
@@ -22,9 +26,14 @@ def return_status(pid):
 @app.route('/submit', methods=['POST'])
 def submit():
     request_data = request.get_json()
-    model=request_data["model"]
-    nevts=request_data["nevts"]
-    pid = process(model, nevts)
+    model = request_data["model"]
+    nevts = request_data["nevts"]
+    device = request_data["device"]
+    if device == "gpu" and gpu_pid != -1:
+        json_file = json.loads(return_status(gpu_pid))
+        if json_file["status"] == "Running":
+            return "ERROR: GPU already busy by another process, your request cannot be accepted.\nRetry later.\n"
+    pid = process(device, model, nevts)
     data = {"job_id": pid}
     return json.dumps(data, indent=True)
 
