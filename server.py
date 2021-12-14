@@ -6,9 +6,10 @@ import os
 import json
 gpu_pid = -1
 
-def process(device, model, nevts):
+def process(device, memory, cpus, model, nevts):
     "Process request and return PID"
-    proc = subprocess.Popen(['python', 'python_script.py', '--device', str(device), '--model', str(model), '--nevts', str(nevts)])
+    proc = subprocess.Popen(['python', 'run_container.py', '--device', str(device), \
+        '--memory', str(memory), '--cpus', str(cpus), '--model', str(model), '--nevts', str(nevts)])
     if  device == "gpu":
         global gpu_pid
         gpu_pid = proc.pid
@@ -27,13 +28,15 @@ def return_status(pid):
 def submit():
     request_data = request.get_json()
     model = request_data["model"]
+    memory = request_data["memory"]
+    cpus = request_data["cpus"]
     nevts = request_data["nevts"]
     device = request_data["device"]
     if device == "gpu" and gpu_pid != -1:
         json_file = json.loads(return_status(gpu_pid))
         if json_file["status"] == "Running":
             return "ERROR: GPU already busy by another process, your request cannot be accepted.\nRetry later.\n"
-    pid = process(device, model, nevts)
+    pid = process(device, memory, cpus, model, nevts)
     data = {"job_id": pid}
     return json.dumps(data, indent=True)
 

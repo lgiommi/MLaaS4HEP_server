@@ -1,5 +1,7 @@
 {
-    "device": "gpu",
-    "model": "model.py",
+    "device": "cpu",
+    "memory": "500m",
+    "cpus": 4,
+    "model": "ciao",
     "nevts": -1
   }
