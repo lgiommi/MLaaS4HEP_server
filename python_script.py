@@ -27,10 +27,11 @@ def main():
     cpus = opts.cpus
     model = opts.model
     nevts = opts.nevts
-    x=1024*1024
-    while True:
-        x*x
-    #x = bytearray(1024*1024*100000)
+
+    #while True:
+    #    x*x
+    #x = bytearray(1024*1024*1000)
+
     data = {"device": device, "memory": memory, "cpus": cpus, "model": model, "nevts": nevts}
     time.sleep(30) # <-- There's no time.wait, but time.sleep.
     with open('data.json', 'w') as outfile:

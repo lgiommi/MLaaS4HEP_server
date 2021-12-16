@@ -26,7 +26,7 @@ def main():
     cpus = opts.cpus
     model = opts.model
     nevts = opts.nevts
-    stream = os.popen(f'docker run -v /Users/luca.giommi/Computer_Windows/Universita/Dottorato/TFaaS/MLaaS4HEP_server:/data/ -i -t mlaas_server --device={device} --memory={memory} --cpus={cpus} --model={model} --nevts={nevts}')
+    stream = os.popen(f'docker run -v /Users/luca.giommi/Computer_Windows/Universita/Dottorato/TFaaS/MLaaS4HEP_server:/data/ -i -t --memory={memory} --cpus={cpus} mlaas_server --device={device} --memory={memory} --cpus={cpus} --model={model} --nevts={nevts}')
     return stream.read()
 
 if __name__ == '__main__':
