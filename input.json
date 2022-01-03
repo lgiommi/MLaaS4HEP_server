@@ -1,7 +1,10 @@
 {
+    "name": "luca",
     "device": "cpu",
     "memory": "500m",
-    "cpus": 4,
-    "model": "ciao",
-    "nevts": -1
+    "cpus": 0.1,
+    "files": "files_test.txt",
+    "labels": "labels_test.txt",
+    "model": "keras_model.py",
+    "params": "params_test.json"
   }

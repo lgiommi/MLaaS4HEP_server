@@ -15,8 +15,6 @@ class OptionParser(object):
             dest="cpus", default="", help="How much of the available CPU resources a container can use")
         self.parser.add_argument("--model", action="store", \
             dest="model", default="", help="Definition of the model")
-        self.parser.add_argument("--nevts", action="store", \
-            dest="nevts", default="", help="Number of events to read")
 
 def main():
     "Main function"
@@ -26,14 +24,13 @@ def main():
     memory = opts.memory
     cpus = opts.cpus
     model = opts.model
-    nevts = opts.nevts
 
     #while True:
     #    x*x
     #x = bytearray(1024*1024*1000)
 
-    data = {"device": device, "memory": memory, "cpus": cpus, "model": model, "nevts": nevts}
-    time.sleep(30) # <-- There's no time.wait, but time.sleep.
+    data = {"device": device, "memory": memory, "cpus": cpus, "model": model}
+    time.sleep(20) # <-- There's no time.wait, but time.sleep.
     with open('data.json', 'w') as outfile:
         json.dump(data, outfile, indent=True)
 
