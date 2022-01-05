@@ -4,15 +4,26 @@ To launch the server run in a terminal
 FLASK_ENV=development FLASK_APP=server.py flask run
 ```
 To sumbit a "submit" request the client should provide a json file like [input.json](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/input.json)
-thant contains the useful information to run the [python_script.py](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/python_script.py) script. The request
-is launched in the following way:
+thant contains the useful information to run a [docker container](https://github.com/lgiommi/MLaaS4HEP_server/blob/157515a5b35e258196e1cc407498d51735def392/run_container.py#L41) able to perform the ML pipeline provided by MLaaS4HEP. The request is submitted in the following way:
 ```
 curl -H "Content-Type: application/json" -d @input.json http://localhost:5000/submit
 ```
-Currently the [python_script.py](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/python_script.py) script prints in the server shell the information 
-contained in the [input.json](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/input.json) file. The server run this python script getting the PID and 
-returns it in the form of json printed on the client shell.
-
-The "status" API takes a PID as argument and retrieve the status. It can be used as the following
+This sends back to the client info about the process name and job id:
 ```
-curl http://localhost:5000/status?pid=5340
+{
+ "process_name": "luca_1",
+ "job_id": 20547
+}
+```
+The user can retrieve the status of the request in the following way:
+```
+curl http://localhost:5000/status_docker?process_name=luca_1
+```
+and save in logs.txt the logs of the process with:
+```
+curl  http://localhost:5000/logs?process_name=luca_1
+```
+This example works with a set of files you can download from gdrive with:
+```
+gdown https://drive.google.com/uc?id=1SFL-gYzu9RIIDFY4uBt-_TamHHmfROVG
+```
