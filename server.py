@@ -80,6 +80,10 @@ def logs():
     process_name = request.args["process_name"]
     return return_logs(process_name)
 
+@app.route('/hello', methods=['GET'])
+def hello():
+    return "Hello World"
+
 
 if __name__ == '__main__':
     # run app in debug mode on port 5000
