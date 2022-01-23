@@ -1,5 +1,5 @@
 # How to make auth-proxy-server work
-- Download auth-proxy-server from gthub
+- Download auth-proxy-server from github
 ```
 git clone https://github.com/dmwm/auth-proxy-server.git
 ```
