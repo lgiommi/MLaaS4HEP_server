@@ -4,14 +4,11 @@ app = Flask(__name__)
 import subprocess
 import os
 import json
-import collections
 gpu_pid = -1
 users_proc = {}
 
 def process(name, device, memory, cpus, files, labels, model, params):
     "Process request and return PID"
-    #proc = subprocess.Popen(['python', 'run_container.py', '--name', str(name), '--device', str(device), \
-    #    '--memory', str(memory), '--cpus', str(cpus), '--model', str(model), '--nevts', str(nevts)])
     proc = subprocess.Popen(['python', 'run_container.py', '--name', str(name), '--memory', str(memory), \
         '--cpus', str(cpus), '--files', str(files), '--labels', str(labels), '--model', str(model), '--params', str(params)])
     if  device == "gpu":
@@ -34,8 +31,8 @@ def return_status_docker(name):
     feedback = {"process_name": name, "status": output.split("\n")[1].split("   ")[4]}
     return json.dumps(feedback, indent=True)
 
-def return_logs(name):
-    stream = os.popen(f'docker logs {name} &> logs.txt')
+def return_logs(name, log_file):
+    stream = os.popen(f'docker logs {name} &> {log_file}')
     #output = stream.read()
     #feedback = {"process_name": name, "logs": output}
     #return json.dumps(feedback, indent=True)
@@ -49,7 +46,6 @@ def submit():
     device = request_data["device"]
     memory = request_data["memory"]
     cpus = request_data["cpus"]
-    #nevts = request_data["nevts"]
     files = request_data["files"]
     labels = request_data["labels"]
     model = request_data["model"]
@@ -78,7 +74,8 @@ def status_docker():
 @app.route('/logs', methods=['GET'])
 def logs():
     process_name = request.args["process_name"]
-    return return_logs(process_name)
+    log_file = request.args["log_file"]
+    return return_logs(process_name, log_file)
 
 @app.route('/hello', methods=['GET'])
 def hello():
