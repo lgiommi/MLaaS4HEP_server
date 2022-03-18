@@ -1,6 +1,6 @@
 ## How to use OAuth2-Proxy server
 Here we show how to use [OAuth2-Proxy](https://oauth2-proxy.github.io/oauth2-proxy/) to create a proxy server in front of the [MLaaS4HEP server](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/server.py).
-You have different ways to install [OAuth2-Proxy](https://oauth2-proxy.github.io/oauth2-proxy/docs/). We successfully used the prebuilt binary and the prebuilt docker image.
+You have different ways to install [OAuth2-Proxy](https://oauth2-proxy.github.io/oauth2-proxy/docs/). We successfully used the prebuilt binary and the prebuilt docker image to test locally the proxy server.
 
 We registered our client using the [https://cms-auth.web.cern.ch/](https://cms-auth.web.cern.ch/) provider and we did the following steps to get access tokens for a new account using [oidc-agent](https://indigo-dc.gitbook.io/oidc-agent/)
 ```
@@ -63,3 +63,8 @@ pass_user_headers = true
 ```
 We followed [this](https://www.rosehosting.com/blog/how-to-generate-a-self-signed-ssl-certificate-on-linux/) recipe to obtain self signed ssl certificate used for the proxy server.
 In the docker case we used the `--ssl-insecure-skip-verify=true` flag to run the proxy server.
+
+Now to use the `submit` API of the [MLaaS4HEP server](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/server.py) with [OAuth2-Proxy](https://oauth2-proxy.github.io/oauth2-proxy/) in front, simply run
+```
+curl -L -k -H 'Content-Type: application/json' -H "Authorization: Bearer ${TOKEN}" -d @input.json http://localhost:4180/submit
+```
