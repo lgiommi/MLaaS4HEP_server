@@ -1,12 +1,12 @@
 # MLaaS4HEP_server
 To launch the server run in a terminal
 ```
-FLASK_ENV=development FLASK_APP=server.py flask run
+FLASK_ENV=development FLASK_APP=server.py flask run -p 8080
 ```
-To sumbit a `submit` request the client should provide a json file like [input.json](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/input.json)
+To submit a `submit` request the client should provide a json file like [input.json](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/input.json)
 thant contains the useful information to run a [docker container](https://github.com/lgiommi/MLaaS4HEP_server/blob/157515a5b35e258196e1cc407498d51735def392/run_container.py#L41) able to perform the ML pipeline provided by MLaaS4HEP. The user can specify the memory and CPU usage for the container and if run on a CPU or GPU (non fully implemented). The request is submitted in the following way:
 ```
-curl -H "Content-Type: application/json" -d @input.json http://localhost:5000/submit
+curl -H "Content-Type: application/json" -d @input.json http://localhost:8080/submit
 ```
 This sends back to the client info about the process name and job id:
 ```
@@ -17,11 +17,11 @@ This sends back to the client info about the process name and job id:
 ```
 The user can retrieve the status of the request in the following way:
 ```
-curl http://localhost:5000/status_docker?process_name=luca_1
+curl http://localhost:8080/status_docker?process_name=luca_1
 ```
 and save in logs.txt the logs of the process with:
 ```
-curl 'http://localhost:5000/logs?process_name=luca_1&log_file=logs.txt'
+curl 'http://localhost:8080/logs?process_name=luca_1&log_file=logs.txt'
 ```
 This example works with a set of files you can download from gdrive with:
 ```
