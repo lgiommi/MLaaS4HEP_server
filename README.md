@@ -25,6 +25,6 @@ curl 'http://localhost:8080/logs?process_name=luca_1&log_file=logs.txt'
 ```
 This example works with a set of files you can download from gdrive with:
 ```
-gdown https://drive.google.com/uc?id=1SFL-gYzu9RIIDFY4uBt-_TamHHmfROVG
+gdown https://drive.google.com/uc?id=1pO_6Uz85JVLVaM5csXDbS6RkYgVTFa63
 ```
 In order to manage the user's authentication we decided to integrate a proxy server in front of the [MLaaS4HEP one](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/server.py). We succesfully used [auth-proxy-server](https://github.com/dmwm/auth-proxy-server.git) and [OAuth2-Proxy server](https://oauth2-proxy.github.io/oauth2-proxy/). For the instructions about their usage see [here](https://github.com/lgiommi/MLaaS4HEP_server/tree/master/doc).
