@@ -4,7 +4,7 @@ To launch the server run in a terminal
 FLASK_ENV=development FLASK_APP=server.py flask run -p 8080
 ```
 To submit a `submit` request the client should provide a json file like [input.json](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/input.json)
-thant contains the useful information to run a [docker container](https://github.com/lgiommi/MLaaS4HEP_server/blob/157515a5b35e258196e1cc407498d51735def392/run_container.py#L41) able to perform the ML pipeline provided by MLaaS4HEP. The user can specify the memory and CPU usage for the container and if run on a CPU or GPU (non fully implemented). The request is submitted in the following way:
+thant contains the useful information to run a [docker container](https://hub.docker.com/layers/mlaas/felixfelicislp/mlaas/tf_2.7/images/sha256-81808e10a0b7dcbbe744bdde070fa3c5652a0e8fd7f8bffe679541a156547920?context=explore) able to perform the ML pipeline provided by MLaaS4HEP. The user can specify the memory and CPU usage for the container and if run on a CPU or GPU (non fully implemented). The request is submitted in the following way:
 ```
 curl -H "Content-Type: application/json" -d @input.json http://localhost:8080/submit
 ```
