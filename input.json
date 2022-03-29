@@ -1,10 +1,12 @@
 {
     "name": "luca",
     "device": "cpu",
-    "memory": "500m",
-    "cpus": 0.1,
+    "memory": "3gb",
+    "cpus": "2",
+    "host_folder": "/Users/luca.giommi/Computer_Windows/Universita/Dottorato/TFaaS/MLaaS4HEP_server/folder_test",
     "files": "files_test.txt",
     "labels": "labels_test.txt",
     "model": "keras_model.py",
-    "params": "params_test.json"
+    "params": "params_test.json",
+    "fout": "trained_model"
   }
