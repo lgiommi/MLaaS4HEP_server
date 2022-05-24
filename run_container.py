@@ -14,6 +14,8 @@ class OptionParser(object):
             dest="cpus", default="", help="How much of the available CPU resources a container can use")
         self.parser.add_argument("--host_folder", action="store", \
             dest="host_folder", default="", help="Specify the path of the host folder where the local data are located")
+        self.parser.add_argument("--cert_folder", action="store", \
+            dest="cert_folder", default="", help="Specify the path of the host folder where the certificates are located")
         self.parser.add_argument("--files", action="store", \
             dest="files", default="", help="txt file where the ROOT files to use are reported")
         self.parser.add_argument("--labels", action="store", \
@@ -33,12 +35,13 @@ def main():
     memory = opts.memory
     cpus = opts.cpus
     host_folder = opts.host_folder
+    cert_folder = opts.cert_folder
     files = opts.files
     labels = opts.labels
     model = opts.model
     params = opts.params
     fout = opts.fout
-    stream = os.popen(f'docker run -v {host_folder}:/workarea/folder_test -it --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:tf_2.7 --files={files} --labels={labels} --model={model} --params={params} --fout={fout}')
+    stream = os.popen(f'docker run -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test -it --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:xrootd_pip --files={files} --labels={labels} --model={model} --params={params} --fout={fout}')
     return stream.read()
 
 if __name__ == '__main__':

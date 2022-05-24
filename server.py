@@ -7,11 +7,11 @@ import json
 gpu_pid = -1
 users_proc = {}
 
-def process(name, device, memory, cpus, host_folder, files, labels, model, params, fout):
+def process(name, device, memory, cpus, host_folder, cert_folder, files, labels, model, params, fout):
     "Process request and return PID"
     proc = subprocess.Popen(['python', 'run_container.py', '--name', str(name), '--memory', str(memory), '--cpus', str(cpus), \
-        '--host_folder', str(host_folder), '--files', str(files), '--labels', str(labels), '--model', str(model), '--params', str(params), \
-        '--fout', str(fout)])
+        '--host_folder', str(host_folder), '--cert_folder', str(cert_folder), '--files', str(files), '--labels', str(labels), \
+        '--model', str(model), '--params', str(params), '--fout', str(fout)])
     if  device == "gpu":
         global gpu_pid
         gpu_pid = proc.pid
@@ -48,6 +48,7 @@ def submit():
     memory = request_data["memory"]
     cpus = request_data["cpus"]
     host_folder = request_data["host_folder"]
+    cert_folder = request_data["cert_folder"]
     files = request_data["files"]
     labels = request_data["labels"]
     model = request_data["model"]
@@ -65,7 +66,7 @@ def submit():
         json_file = json.loads(return_status(gpu_pid))
         if json_file["status"] == "Running":
             return "ERROR: GPU already busy by another process, your request cannot be accepted.\nRetry later.\n"
-    pid = process(users_proc[name], device, memory, cpus, host_folder, files, labels, model, params, fout)
+    pid = process(users_proc[name], device, memory, cpus, host_folder, cert_folder, files, labels, model, params, fout)
     data = {"process_name": users_proc[name], "job_id": pid}
     return json.dumps(data, indent=True)
 
