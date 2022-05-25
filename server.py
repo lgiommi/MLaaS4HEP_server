@@ -9,7 +9,7 @@ users_proc = {}
 
 def process(name, device, memory, cpus, host_folder, cert_folder, files, labels, model, params, fout):
     "Process request and return PID"
-    proc = subprocess.Popen(['python', 'run_container.py', '--name', str(name), '--memory', str(memory), '--cpus', str(cpus), \
+    proc = subprocess.Popen(['python3', 'run_container.py', '--name', str(name), '--memory', str(memory), '--cpus', str(cpus), \
         '--host_folder', str(host_folder), '--cert_folder', str(cert_folder), '--files', str(files), '--labels', str(labels), \
         '--model', str(model), '--params', str(params), '--fout', str(fout)])
     if  device == "gpu":
