@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_file
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = '/Users/luca.giommi/Downloads/prova'
@@ -40,12 +40,10 @@ def return_status_docker(name):
     feedback = {"process_name": name, "status": output.split("\n")[1].split("   ")[4]}
     return json.dumps(feedback, indent=True)
 
-def return_logs(name, log_file):
-    stream = os.popen(f'docker logs {name} &> {log_file}')
-    #output = stream.read()
-    #feedback = {"process_name": name, "logs": output}
-    #return json.dumps(feedback, indent=True)
-    return ""
+def return_logs(name):
+    log_path = os.path.join(UPLOAD_FOLDER,name.rsplit('_', 1)[0],name+".txt")
+    os.popen(f'docker logs {name} &> {log_path}').read()
+    return send_file(log_path,as_attachment=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -84,11 +82,10 @@ def status_docker():
     process_name = request.args["process_name"]
     return return_status_docker(process_name)
 
-@app.route('/logs', methods=['GET'])
+@app.route('/logs', methods=['GET', 'POST'])
 def logs():
     process_name = request.args["process_name"]
-    log_file = request.args["log_file"]
-    return return_logs(process_name, log_file)
+    return return_logs(process_name)
 
 @app.route('/hello', methods=['GET'])
 def hello():
