@@ -105,7 +105,8 @@ def upload():
         tar = tarfile.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         tar.extractall(path=app.config['UPLOAD_FOLDER'])
         tar.close()
-        shutil.move(os.path.join(app.config['UPLOAD_FOLDER'], filename.rsplit('.', 2)[0].lower()), os.path.join(app.config['UPLOAD_FOLDER'],name))
+        shutil.move(os.path.join(app.config['UPLOAD_FOLDER'], filename.rsplit('.', 2)[0].lower()),\
+            os.path.join(app.config['UPLOAD_FOLDER'],name))
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return "Successfully uploaded!\n"
 
