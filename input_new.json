@@ -6,6 +6,5 @@
     "files": "files_test.txt",
     "labels": "labels_test.txt",
     "model": "ex_keras_model.py",
-    "params": "params_test.json",
-    "fout": "trained_model"
+    "params": "params_test.json"
   }

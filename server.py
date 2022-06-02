@@ -15,11 +15,11 @@ import json
 gpu_pid = -1
 users_proc = {}
 
-def process(name, device, memory, cpus, files, labels, model, params, fout):
+def process(name, device, memory, cpus, files, labels, model, params):
     "Process request and return PID"
     proc = subprocess.Popen(['python3', 'run_container.py', '--name', str(name), '--memory', str(memory), '--cpus', str(cpus), \
         '--host_folder', str(os.path.join(UPLOAD_FOLDER,name.rsplit('_', 1)[0])), '--cert_folder', str(CERT_FOLDER), \
-        '--files', str(files), '--labels', str(labels), '--model', str(model), '--params', str(params), '--fout', str(fout)])
+        '--files', str(files), '--labels', str(labels), '--model', str(model), '--params', str(params), '--fout', str(name)])
     if  device == "gpu":
         global gpu_pid
         gpu_pid = proc.pid
@@ -41,9 +41,9 @@ def return_status_docker(name):
     return json.dumps(feedback, indent=True)
 
 def return_logs(name):
-    log_path = os.path.join(UPLOAD_FOLDER,name.rsplit('_', 1)[0],name+".txt")
+    log_path = os.path.join(UPLOAD_FOLDER, name.rsplit('_', 1)[0], name + ".txt")
     os.popen(f'docker logs {name} &> {log_path}').read()
-    return send_file(log_path,as_attachment=True)
+    return send_file(log_path, as_attachment=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -60,7 +60,6 @@ def submit():
     labels = request_data["labels"]
     model = request_data["model"]
     params = request_data["params"]
-    fout = request_data["fout"]
 
     if name in users_proc:
         count = int(users_proc[name].split("_")[1])
@@ -73,7 +72,7 @@ def submit():
         json_file = json.loads(return_status(gpu_pid))
         if json_file["status"] == "Running":
             return "ERROR: GPU already busy by another process, your request cannot be accepted.\nRetry later.\n"
-    pid = process(users_proc[name], device, memory, cpus, files, labels, model, params, fout)
+    pid = process(users_proc[name], device, memory, cpus, files, labels, model, params)
     data = {"process_name": users_proc[name], "job_id": pid}
     return json.dumps(data, indent=True)
 
@@ -82,14 +81,14 @@ def status_docker():
     process_name = request.args["process_name"]
     return return_status_docker(process_name)
 
-@app.route('/logs', methods=['GET', 'POST'])
+@app.route('/logs', methods=['GET'])
 def logs():
     process_name = request.args["process_name"]
     return return_logs(process_name)
 
 @app.route('/hello', methods=['GET'])
 def hello():
-    return "Hello World"
+    return "Hello World\n"
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -108,9 +107,27 @@ def upload():
         tar.close()
         shutil.move(os.path.join(app.config['UPLOAD_FOLDER'], filename.rsplit('.', 2)[0].lower()), os.path.join(app.config['UPLOAD_FOLDER'],name))
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        #return redirect(url_for('download_file', name=filename))
         return "Successfully uploaded!\n"
 
+@app.route('/delete_specs', methods=['GET'])
+def delete_specs():
+    name = request.args["name"]
+    specs_path = os.path.join(UPLOAD_FOLDER,name)
+    os.popen(f'rm {specs_path}/*specs*').read()
+    return "Specs deletion completed!\n"
+
+@app.route('/model', methods=['GET'])
+def model():
+    process_name = request.args["process_name"]
+    model_path = os.path.join(UPLOAD_FOLDER, process_name.rsplit('_', 1)[0], process_name + ".tar.gz")
+    return send_file(model_path, as_attachment=True)
+
+@app.route('/delete_folder', methods=['GET'])
+def delete_folder():
+    name = request.args["name"]
+    folder_path = os.path.join(UPLOAD_FOLDER, name)
+    os.popen(f'rm -r -f {folder_path}').read()
+    return "Folder deletion completed!\n"
 
 if __name__ == '__main__':
     # run app in debug mode on port 5000

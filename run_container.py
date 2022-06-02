@@ -41,7 +41,7 @@ def main():
     model = opts.model
     params = opts.params
     fout = opts.fout
-    stream = os.popen(f'docker run -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test -it --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:xrootd_pip --files={files} --labels={labels} --model={model} --params={params} --fout={fout}')
+    stream = os.popen(f'docker run -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test -it --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:xrootd_pip --files={files} --labels={labels} --model={model} --params={params} --fout={fout} && tar -czvf {host_folder}/{fout}.tar.gz -C {host_folder}/{fout} . && rm -r -f {host_folder}/{fout}')
     return stream.read()
 
 if __name__ == '__main__':
