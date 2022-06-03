@@ -1,0 +1,10 @@
+{
+    "name": "luca",
+    "device": "cpu",
+    "memory": "3gb",
+    "cpus": "2",
+    "files": "files_test.txt",
+    "labels": "labels_test.txt",
+    "model": "ex_keras_model.py",
+    "params": "params_test.json"
+  }
