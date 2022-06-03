@@ -37,7 +37,7 @@ curl http://localhost:8080/delete_folder?name=luca
 ```
 
 ### Enable the reading of remote ROOT files
-Since the reading of remote files from grid data centers can be only done using an x509 proxy, an xrootd proxy server and renewer are used and integrated with MLaaS4HEP_server following [this](https://github.com/comp-dev-cms-ita/compose-xrootd) recipe.
+Since the reading of remote files from grid data centers can be done only using an x509 proxy, an xrootd proxy server and renewer are used and integrated with MLaaS4HEP_server following [this](https://github.com/comp-dev-cms-ita/compose-xrootd) recipe.
 
 ### Add an authentication layer
 In order to manage the user's authentication we decided to integrate a proxy server in front of the [MLaaS4HEP one](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/server.py). We succesfully used [auth-proxy-server](https://github.com/dmwm/auth-proxy-server.git) and [OAuth2-Proxy server](https://oauth2-proxy.github.io/oauth2-proxy/). For the instructions about their usage see [here](https://github.com/lgiommi/MLaaS4HEP_server/tree/master/doc).
