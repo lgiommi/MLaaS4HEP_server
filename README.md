@@ -1,30 +1,39 @@
 # MLaaS4HEP_server
-To launch the server run in a terminal
+The code on this repo allows to build a MLaaS4HEP server: the user uploads the required files and runs a ML workflow using [MLaaS4HEP](https://github.com/vkuznet/MLaaS4HEP).
+
+To launch the server, clone the repo and run in a terminal:
 ```
 FLASK_ENV=development FLASK_APP=server.py flask run -p 8080
 ```
-To submit a `submit` request the client should provide a json file like [input.json](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/input.json)
-thant contains the useful information to run a [docker container](https://hub.docker.com/layers/mlaas/felixfelicislp/mlaas/tf_2.7/images/sha256-81808e10a0b7dcbbe744bdde070fa3c5652a0e8fd7f8bffe679541a156547920?context=explore) able to perform the ML pipeline provided by MLaaS4HEP. The user can specify the memory and CPU usage for the container and if run on a CPU or GPU (non fully implemented). The request is submitted in the following way:
+
+The server has the following APIs:
+- `/upload` to push a tarball file containing all the files necessary to run MLaaS4HEP. The name of the folder must be provided as argument.
 ```
-curl -H "Content-Type: application/json" -d @input.json http://localhost:8080/submit
+curl -F "file=@folder_to_upload.tar.gz" http://localhost:8080/upload?name=luca
 ```
-This sends back to the client info about the process name and job id:
+- `/submit` to submit a MLaaSHEP workflow. A json file, like [input_new.json](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/input_new.json), must be provided in the curl call with information about which files uses from which uploaded folder. The user can also specify the memory and CPU usage available for the process and if run on a CPU or GPU (not fully implemented).
 ```
-{
- "process_name": "luca_1",
- "job_id": 20547
-}
+curl -H "Content-Type: application/json" -d @input_new.json http://localhost:8080/submit
 ```
-The user can retrieve the status of the request in the following way:
+- `/status_docker` to get back information about the status of an ongoing process. The process name must be provided as argument. 
 ```
 curl http://localhost:8080/status_docker?process_name=luca_1
 ```
-and save in logs.txt the logs of the process with:
+- `/logs` to get back and save in a given file the logs of a docker process. The process name must be provided as argument. 
 ```
-curl 'http://localhost:8080/logs?process_name=luca_1&log_file=logs.txt'
+curl -L -o logs.txt http://localhost:8080/logs?process_name=luca_1
 ```
-This example works with a set of files you can download from gdrive with:
+- `/model` to get back the tarball of the output model delivered by MLaaS4HEP. The process name must be provided as argument. 
 ```
-gdown https://drive.google.com/uc?id=1pO_6Uz85JVLVaM5csXDbS6RkYgVTFa63
+curl -L -o luca_1.tar.gz http://localhost:8080/model?process_name=luca_1
 ```
+- `/delete_specs` to delete specs files produced by MLaaS4HEP in a previously uploaded folder. The name of the folder must be provided as argument.
+```
+curl http://localhost:8080/delete_specs?name=luca
+```
+- `/delete_folder` to delete a previously uploaded folder. The name of the folder must be provided as argument.
+```
+curl http://localhost:8080/delete_folder?name=luca
+```
+
 In order to manage the user's authentication we decided to integrate a proxy server in front of the [MLaaS4HEP one](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/server.py). We succesfully used [auth-proxy-server](https://github.com/dmwm/auth-proxy-server.git) and [OAuth2-Proxy server](https://oauth2-proxy.github.io/oauth2-proxy/). For the instructions about their usage see [here](https://github.com/lgiommi/MLaaS4HEP_server/tree/master/doc).
