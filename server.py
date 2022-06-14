@@ -1,5 +1,8 @@
 from flask import Flask, request, send_file
 from werkzeug.utils import secure_filename
+import subprocess
+import os, tarfile, shutil
+import json
 
 UPLOAD_FOLDER = '/Users/luca.giommi/Downloads/prova'
 CERT_FOLDER = '/Users/luca.giommi/.grid-security/grid-security/certificates'
@@ -8,10 +11,6 @@ ALLOWED_EXTENSIONS = {'gz', 'txt', 'pdf'}
 app = Flask(__name__)
 app.secret_key = "mlaas4HEP_secret"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-import subprocess
-import os, tarfile, shutil
-import json
 gpu_pid = -1
 users_proc = {}
 

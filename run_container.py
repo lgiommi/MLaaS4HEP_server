@@ -1,5 +1,5 @@
 import argparse
-import os
+import os, json
 
 class OptionParser(object):
     "Option parser class for reader arguments"
@@ -41,7 +41,10 @@ def main():
     model = opts.model
     params = opts.params
     fout = opts.fout
-    stream = os.popen(f'docker run -v {host_folder}/../x509_proxy:{host_folder}/x509_proxy -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test -it --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:xrootd_pip --files={files} --labels={labels} --model={model} --params={params} --fout={fout} && tar -czvf {host_folder}/{fout}.tar.gz -C {host_folder}/{fout} . && rm -r -f {host_folder}/{fout}')
+    params_file = {"name": fout, "model": "saved_model.pb"}
+    with open(os.path.join(host_folder, fout + "_params.json"), "w") as file:
+        json.dump(params_file, file)
+    stream = os.popen(f'docker run -v {host_folder}/../x509_proxy:{host_folder}/x509_proxy -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test -it --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:xrootd_pip --files={files} --labels={labels} --model={model} --params={params} --fout={fout} cp {host_folder}/{fout}_params.json {host_folder}/{fout}/params.json && rm -f {host_folder}/{fout}_params.json && tar -czvf {host_folder}/{fout}.tar.gz -C {host_folder}/{fout} . && rm -r -f {host_folder}/{fout}')
     return stream.read()
 
 if __name__ == '__main__':
