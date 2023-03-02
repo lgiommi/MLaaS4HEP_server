@@ -1,16 +1,18 @@
 from flask import Flask, request, send_file
 from werkzeug.utils import secure_filename
-import subprocess
-import os, tarfile, shutil
-import json
 
-UPLOAD_FOLDER = '/Users/luca.giommi/Downloads/prova'
-CERT_FOLDER = '/Users/luca.giommi/.grid-security/grid-security/certificates'
-ALLOWED_EXTENSIONS = {'gz', 'txt', 'pdf'}
+UPLOAD_FOLDER = '/data/for_server'
+CERT_FOLDER = '/data/compose-xrootd/server_certificates/'
+ALLOWED_EXTENSIONS = {'gz', 'txt', 'pdf', 'json'}
+TFAAS_REPO = '/data/models_repo'
 
 app = Flask(__name__)
 app.secret_key = "mlaas4HEP_secret"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+import subprocess
+import os, tarfile, shutil
+import json
 gpu_pid = -1
 users_proc = {}
 
@@ -107,6 +109,15 @@ def upload():
         shutil.move(os.path.join(app.config['UPLOAD_FOLDER'], filename.rsplit('.', 2)[0].lower()),\
             os.path.join(app.config['UPLOAD_FOLDER'],name))
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return "Successfully uploaded!\n"
+
+@app.route('/setup_tfaas', methods=['POST'])
+def setup_tfaas():
+    file = request.files['file']
+    process_name = request.args["process_name"]
+    if allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(TFAAS_REPO, process_name, filename))
         return "Successfully uploaded!\n"
 
 @app.route('/delete_specs', methods=['GET'])
