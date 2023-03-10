@@ -44,7 +44,15 @@ In order to manage the user's authentication we decided to integrate a proxy ser
 
 # The entire service
 We implemented a working prototype connecting OAuth2-Proxy server, MLaaS4HEP_server, xrootd proxy-cache server, X509 proxy renewer and [TFaaS](https://github.com/vkuznet/TFaaS), hosted by a VM of the INFN Cloud. The MLaaS4HEP_server APIs can be reached at the following address https://90.147.174.27:4433 while TFaaS at https://90.147.174.27:8081.
-
+To get an access token for the MLaaS4HEP_server and TFaaS you have to install [oidc-agent](https://indigo-dc.gitbook.io/oidc-agent/), edit your .bashrc to make oidc-agent persistent, adding the following line:
+```
+test -e ~/.oidc-agent.env && . ~/.oidc-agent.env
+```
+Then run the agent and load the environment again:
+```
+oidc-agent > ~/.oidc-agent.env
+source ~/.bashrc
+```
 In the following we provide a practical example about how to perform the entire pipeline, from preparing the data to get predictions. You can find a demo version [here](https://youtu.be/_JHg4oTeVbc). The commands used for the demo are [here](https://github.com/lgiommi/MLaaS4HEP_server/blob/master/demo.sh).
 
 ```
