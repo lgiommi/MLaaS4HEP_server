@@ -44,7 +44,9 @@ def main():
     params_file = {"name": fout, "model": "saved_model.pb"}
     with open(os.path.join(host_folder, fout + "_params.json"), "w") as file:
         json.dump(params_file, file)
-    stream = os.popen(f'docker run -v {host_folder}/../x509_proxy:{host_folder}/x509_proxy -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test -it --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:xrootd_pip --files={files} --labels={labels} --model={model} --params={params} --fout={fout} cp {host_folder}/{fout}_params.json {host_folder}/{fout}/params.json && rm -f {host_folder}/{fout}_params.json && tar -czvf {host_folder}/{fout}.tar.gz -C {host_folder}/{fout} . && rm -r -f {host_folder}/{fout}')
+    stream = os.popen(f'docker run -v /data/models_repo:/data/models -v /data/compose-xrootd/proxy/x509_proxy:/workarea/folder_test/x509_proxy -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:xrootd_pip --files={files} --labels={labels} --model={model} --params={params} --fout={fout} && cp {host_folder}/{fout}_params.json {host_folder}/{fout}/params.json && rm -f {host_folder}/{fout}_params.json && cp -rf {host_folder}/{fout} /data/models_repo && tar -czvf {host_folder}/{fout}.tar.gz -C {host_folder}/{fout} . && rm -r -f {host_folder}/{fout}')
+    #stream = os.popen(f'docker run -v /data/compose-xrootd/proxy/x509_proxy:/workarea/folder_test/x509_proxy -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test -it --name={name} --memory={memory} --cpus={cpus} felixfelicislp/mlaas:xrootd_pip --files={files} --labels={labels} --model={model} --params={params} --fout={fout} && tar -czvf {host_folder}/{fout}.tar.gz -C {host_folder}/{fout} . && rm -r -f {host_folder}/{fout}')
+    #stream = os.popen(f'docker run -v /data/compose-xrootd/proxy/x509_proxy:{host_folder}/x509_proxy -v {cert_folder}:/workarea/certificates -v {host_folder}:/workarea/folder_test --entrypoint /bin/bash -dt felixfelicislp/mlaas:xrootd_pip')
     return stream.read()
 
 if __name__ == '__main__':

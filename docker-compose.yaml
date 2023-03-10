@@ -1,0 +1,130 @@
+version: "3.9"
+services:
+
+  tfaas_proxy:
+    container_name: tfaas_proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0
+    volumes:
+      - /data/oauth_proxy:/etc
+    command:
+      - "--config"
+      - "/etc/tfaas_proxy.cfg"
+      - "--skip-jwt-bearer-tokens"
+      - "true"
+      - "--ssl-insecure-skip-verify"
+      - "true"
+      - "--tls-min-version"
+      - "TLS1.3"
+    network_mode: "host"
+
+  mlaas_proxy:
+    container_name: mlaas_proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0
+    volumes:
+      - /data/oauth_proxy:/etc
+    command:
+      - "--config"
+      - "/etc/mlaas_proxy.cfg"
+      - "--skip-jwt-bearer-tokens"
+      - "true"
+      - "--ssl-insecure-skip-verify"
+      - "true"
+      - "--tls-min-version"
+      - "TLS1.3"
+    network_mode: "host"
+
+  tfaas:
+    container_name: tfaas
+    image: cmssw/tfaas:v01.01.06
+    volumes:
+      - /data/models_repo:/data/models
+    ports:
+      - "8083:8083"
+
+  mlaas_service:
+    container_name: mlaas_server
+    image: felixfelicislp/mlaas_server:v1.0.0
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/for_server:/data/for_server
+      - /data/models_repo:/data/models_repo
+    command:
+      ["flask", "run", "--host", "0.0.0.0", "-p", "8080"]
+
+  cache:
+    depends_on:
+    - x509-refresh
+    image: dodasts/cache:v2
+    restart: always
+    entrypoint:
+      - bash
+      - -c
+      - "mkdir -p /metadata; chown -R 999:998 /metadata; mkdir -p /data; chown -R 999:998 /data; mkdir -p /etc/prova; chown -R 999:998 /etc/prova; cp /etc/grid-security/certificates/* /etc/prova; cd /data; env; chown -R 999:998 /var/log/xrootd; chown -R 999:998 /etc/xrootd/conf; sudo -E -u xrootd /usr/bin/xrootd -l /var/log/xrootd/xrootd.log -c /etc/xrootd/conf/xrootd.cfg -n xrd ; tail -f /var/log/xrootd/xrd/xrootd.log" 
+    privileged: true
+    network_mode: "host"
+    volumes:
+    - type: bind
+      source: /data/compose-xrootd/server_certificates
+      target: /etc/prova
+    - type: bind
+      source: /data/compose-xrootd/metadata
+      target: /metadata
+    - type: bind
+      source: /data/compose-xrootd/data
+      target: /data
+    - type: bind
+      source: /data/compose-xrootd/logs
+      target: /var/log/xrootd
+    - type: bind
+      source: /data/compose-xrootd/config
+      target: /etc/xrootd/conf 
+    - type: bind
+      source: /data/compose-xrootd/proxy
+      target: /etc/x509proxy 
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "pgrep xrootd"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    env_file:
+    - /data/compose-xrootd/.env 
+  x509-refresh:
+    image: dodasts/x509-renewer:v1
+    secrets:
+      - my_secret
+    restart: always
+    entrypoint:
+      - bash
+      - -c
+      - "cd /etc/certs && while true; do chown -R 999:998 /etc/x509proxy/proxy; voms-proxy-info --file /etc/x509proxy/proxy --exists --valid 8:00 || cat /run/secrets/my_secret | voms-proxy-init --pwstdin --voms cms --cert usercert_test.pem --key usercert_test.key --debug --out /etc/x509proxy/proxy/x509_proxy; chown -R 999:998 /etc/x509proxy/proxy; sleep 600; done"
+    environment:
+    - REPO_LIST=cms.cern.ch  grid.cern.ch cms.dodas.infn.it 
+    privileged: true
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "voms-proxy-info --exists --valid 6:00 --file /etc/x509proxy/proxy/x509_proxy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+    - type: bind
+      source: /data/compose-xrootd/certs
+      target: /etc/certs
+    - type: bind
+      source: /data/compose-xrootd/proxy
+      target: /etc/x509proxy/proxy
+
+  autoheal:
+    restart: always
+    environment:
+    - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    image: willfarrell/autoheal
+
+secrets:
+  my_secret:
+          file: my_secret
