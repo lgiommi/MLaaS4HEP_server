@@ -127,4 +127,4 @@ services:
 
 secrets:
   my_secret:
-          file: /data/compose-xrootd/certs/test.txt
+          file: my_secret
